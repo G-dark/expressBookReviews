@@ -11,7 +11,9 @@ public_users.post("/register", (req, res) => {
   if (username && password) {
     if (isValid(username)) {
       users.push({ username: username, password: password });
-      return res.status(201).json({ message: "user successfully registered. Now you can login" });
+      return res
+        .status(201)
+        .json({ message: "user successfully registered. Now you can login" });
     } else {
       return res.status(406).json({ message: "username already used" });
     }
@@ -67,37 +69,54 @@ public_users.get("/review/:isbn", function (req, res) {
   }
 });
 
-const getAllBooks = async (baseurl) => {
-  try {
-    const getAllBooks = await axios.get(baseUrl);
-    return getAllBooks;
-  } catch (error) {}
-};
-const getBookByIsbn = async (baseurl, isbn) => {
-  try {
-    const getBookByIsbn = await axios.get(baseUrl + "/isbn/"+isbn);
-    return getBookByIsbn;
-  } catch (error) {
-    return { message: "There is an error" };
-  }
-};
-const getBookByAuthor = async (baseurl, author) => {
-  try {
-    const getBookByAuthor = await axios.get(
-      baseUrl + "/author/"+ author,
-    );
-    return getBookByAuthor;
-  } catch (error) {
-    return { message: "There is an error" };
-  }
-};
-const getBookByTitle = async (baseurl, title) => {
-
-  try {
-    const getBookByTitle = await axios.get(baseUrl + "/title/" + title);
-    return getBookByTitle;
-  } catch (error) {
-    return { message: "There is an error" };
-  }
-};
+public_users.get(
+  "/Async",
+  (getAllBooks = async () => {
+    try {
+      const getAllBooks = await axios.get("http://localhost:5000");
+      return getAllBooks;
+    } catch (error) {
+      return { message: "There is an error" };
+    }
+  }),
+);
+public_users.get(
+  "/Async/:isbn",
+  (getBookByIsbn = async () => {
+    try {
+      const getBookByIsbn = await axios.get(
+        "http://localhost:5000/isbn/" + req.params.isbn,
+      );
+      return getBookByIsbn;
+    } catch (error) {
+      return { message: "There is an error" };
+    }
+  }),
+);
+public_users.get(
+ "/Async/:author",
+  (getBookByAuthor = async () => {
+    try {
+      const getBookByAuthor = await axios.get(
+        "http://localhost:5000/author/" + req.params.author,
+      );
+      return getBookByAuthor;
+    } catch (error) {
+      return { message: "There is an error" };
+    }
+  }),
+);
+public_users.get(
+  "/Async/:title",
+  (getBookByTitle = async ()=> {
+    try {
+      const getBookByTitle = await axios.get(
+        "http://localhost:5000/title/" + req.params.title,
+      );
+      return getBookByTitle;
+    } catch (error) {
+      return { message: "There is an error" };
+    }
+  }),
+);
 module.exports.general = public_users;

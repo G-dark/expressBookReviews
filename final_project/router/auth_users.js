@@ -34,7 +34,7 @@ regd_users.post("/login", (req, res) => {
         accessToken,
         username,
       };
-      return res.json({message: "Login successfully"});
+      return res.json({message: "Login successful!"});
     } else {
       return res.status(406).json({ message: "you aren't an user yet" });
     }
@@ -56,7 +56,7 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
       return res.json({ message: "Review updated succesfully" });
     } else {
       book.reviews.push({ user: req.session["username"], review });
-      return res.json({ message: "Review created successfully" });
+      return res.json({ message: "Review added successfully" });
     }
   } else {
     return res.status(404).json({ message: "That book doesn't exist" });
@@ -72,7 +72,7 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
       bookfound.reviews = restReview;
       books.filter(book => book.isbn !== req.params.isbn)
       books.push(bookfound)
-      res.json({ message: "review deleted successfully" });
+      res.json({ message: "Review for ISBN 1 deleted" });
   } else {
     return res.status(404).json({ message: "That book doesn't exist" });
   }
