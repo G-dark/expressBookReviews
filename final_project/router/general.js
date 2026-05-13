@@ -68,19 +68,36 @@ public_users.get("/review/:isbn", function (req, res) {
 });
 
 const getAllBooks = async (baseurl) => {
-  const getAllBooks = await axios.get(baseUrl);
-  return getAllBooks;
+  try {
+    const getAllBooks = await axios.get(baseUrl);
+    return getAllBooks;
+  } catch (error) {}
 };
-const getBookByIsbn = async (baseurl) => {
-  const getBookByIsbn = await axios.get(baseUrl + "/isbn/9780802144478");
-  return getBookByIsbn;
+const getBookByIsbn = async (baseurl, isbn) => {
+  try {
+    const getBookByIsbn = await axios.get(baseUrl + "/isbn/"+isbn);
+    return getBookByIsbn;
+  } catch (error) {
+    return { message: "There is an error" };
+  }
 };
-const getBookByAuthor = async (baseurl) => {
-  const getBookByAuthor = await axios.get(baseUrl + "/author/Dante Alighieri");
-  return getBookByAuthor;
+const getBookByAuthor = async (baseurl, author) => {
+  try {
+    const getBookByAuthor = await axios.get(
+      baseUrl + "/author/"+ author,
+    );
+    return getBookByAuthor;
+  } catch (error) {
+    return { message: "There is an error" };
+  }
 };
-const getBookByTitle = async (baseurl) => {
-  const getBookByTitle = await axios.get(baseUrl + "/title/Fairy%20tales");
-  return getBookByTitle;
+const getBookByTitle = async (baseurl, title) => {
+  
+  try {
+    const getBookByTitle = await axios.get(baseUrl + "/title/" + title);
+    return getBookByTitle;
+  } catch (error) {
+    return { message: "There is an error" };
+  }
 };
 module.exports.general = public_users;
