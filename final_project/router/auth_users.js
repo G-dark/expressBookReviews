@@ -24,7 +24,7 @@ const authenticatedUser = (username, password) => {
 
 //only registered users can login
 regd_users.post("/login", (req, res) => {
-  const { username, password } = req.body;
+  const { username, password } = req.query;
   if (username && password) {
     if (authenticatedUser(username, password)) {
       const accessToken = jwt.sign({ data: password }, "customer", {
@@ -34,18 +34,18 @@ regd_users.post("/login", (req, res) => {
         accessToken,
         username,
       };
-      return res.json("You are logged now");
+      return res.json({message: "Login successfully"});
     } else {
-      return res.status(406).json({ error: "you aren't an user yet" });
+      return res.status(406).json({ message: "you aren't an user yet" });
     }
   } else {
-    return res.status(406).json({ error: "put the data" });
+    return res.status(406).json({ message: "put the data" });
   }
 });
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
-  const { review } = req.body;
+  const { review } = req.query;
   const book = books.find((book) => book.isbn == req.params.isbn);
   if (book) {
     const findReview = book.reviews.find(
@@ -53,13 +53,13 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
     );
     if (findReview) {
       findReview.review = review;
-      return res.json({ success: "Review updated" });
+      return res.json({ message: "Review updated succesfully" });
     } else {
       book.reviews.push({ user: req.session["username"], review });
-      return res.json({ success: "Review done" });
+      return res.json({ message: "Review created successfully" });
     }
   } else {
-    return res.status(404).json({ error: "That book doesn't exist" });
+    return res.status(404).json({ message: "That book doesn't exist" });
   }
 });
 
@@ -69,15 +69,12 @@ regd_users.delete("/auth/review/:isbn", (req, res) => {
     const restReview = bookfound.reviews.filter(
       (review) => review.user !== req.session["username"],
     );
-    if (restReview) {
       bookfound.reviews = restReview;
-      res.json({ success: "review deleted" });
-    } else {
-      return res.status(404).json({ error: "You dont have review in this book" });
-    }
-
+      books.filter(book => book.isbn !== req.params.isbn)
+      books.push(bookfound)
+      res.json({ message: "review deleted successfully" });
   } else {
-    return res.status(404).json({ error: "That book doesn't exist" });
+    return res.status(404).json({ message: "That book doesn't exist" });
   }
 });
 

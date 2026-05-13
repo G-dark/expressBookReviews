@@ -6,17 +6,17 @@ const axios = require("axios");
 const public_users = express.Router();
 
 public_users.post("/register", (req, res) => {
-  const { username, password } = req.body;
+  const { username, password } = req.query;
 
   if (username && password) {
     if (isValid(username)) {
       users.push({ username: username, password: password });
-      return res.status(201).json({ success: "user created" });
+      return res.status(201).json({ message: "user successfully registered. Now you can login" });
     } else {
-      return res.status(406).json({ error: "username already use" });
+      return res.status(406).json({ message: "username already used" });
     }
   } else {
-    return res.status(406).json({ error: "put the necessary data" });
+    return res.status(406).json({ message: "put the necessary data" });
   }
 });
 
@@ -31,7 +31,7 @@ public_users.get("/isbn/:isbn", function (req, res) {
   if (findBook) {
     return res.json({ findBook });
   } else {
-    return res.status(404).json({ error: "That book doesn't exist" });
+    return res.status(404).json({ message: "That book doesn't exist" });
   }
 });
 
@@ -43,7 +43,7 @@ public_users.get("/author/:author", function (req, res) {
   } else {
     return res
       .statusCode(404)
-      .json({ error: "There are no books with that author" });
+      .json({ message: "There are no books with that author" });
   }
 });
 
@@ -53,7 +53,7 @@ public_users.get("/title/:title", function (req, res) {
   if (findBooks) {
     return res.json(findBooks);
   } else {
-    return res.json({ error: "There are no books with that title" });
+    return res.json({ message: "There are no books with that title" });
   }
 });
 
@@ -63,7 +63,7 @@ public_users.get("/review/:isbn", function (req, res) {
   if (findBook) {
     return res.json(findBook.reviews);
   } else {
-    return res.json({ error: "That book doesn't exist" });
+    return res.json({ message: "That book doesn't exist" });
   }
 });
 
@@ -92,7 +92,7 @@ const getBookByAuthor = async (baseurl, author) => {
   }
 };
 const getBookByTitle = async (baseurl, title) => {
-  
+
   try {
     const getBookByTitle = await axios.get(baseUrl + "/title/" + title);
     return getBookByTitle;
