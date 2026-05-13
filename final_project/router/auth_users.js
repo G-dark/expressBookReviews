@@ -1,28 +1,84 @@
-const express = require('express');
-const jwt = require('jsonwebtoken');
+const express = require("express");
+const jwt = require("jsonwebtoken");
 let books = require("./booksdb.js");
 const regd_users = express.Router();
 
 let users = [];
 
-const isValid = (username)=>{ //returns boolean
-//write code to check is the username is valid
-}
+const isValid = (username) => {
+  //returns boolean
+  const findUser = users.find((user) => user.username == username);
+  return !findUser;
+};
 
-const authenticatedUser = (username,password)=>{ //returns boolean
-//write code to check if username and password match the one we have in records.
-}
+const authenticatedUser = (username, password) => {
+  //returns boolean
+  const findUser = users.find((user) => user.username == username);
+  console.log(users, username, findUser )
+  if (findUser) {
+    return username == findUser.username && findUser.password == password;
+  } else {
+    return false;
+  }
+};
 
 //only registered users can login
-regd_users.post("/login", (req,res) => {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+regd_users.post("/login", (req, res) => {
+  const { username, password } = req.body;
+  if (username && password) {
+    if (authenticatedUser(username, password)) {
+      const accessToken = jwt.sign({ data: password }, "customer", {
+        expiresIn: "1h",
+      });
+      req.session.authorization = {
+        accessToken,
+        username,
+      };
+      return res.json("You are logged now");
+    } else {
+      return res.status(406).json({ error: "you aren't an user yet" });
+    }
+  } else {
+    return res.status(406).json({ error: "put the data" });
+  }
 });
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  const { review } = req.body;
+  const book = books.find((book) => book.isbn == req.params.isbn);
+  if (book) {
+    const findReview = book.reviews.find(
+      (review) => review.user == req.session["username"],
+    );
+    if (findReview) {
+      findReview.review = review;
+      return res.json({ success: "Review updated" });
+    } else {
+      book.reviews.push({ user: req.session["username"], review });
+      return res.json({ success: "Review done" });
+    }
+  } else {
+    return res.status(404).json({ error: "That book doesn't exist" });
+  }
+});
+
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+  const bookfound = books.find((book) => book.isbn == req.params.isbn);
+  if (bookfound) {
+    const restReview = bookfound.reviews.filter(
+      (review) => review.user !== req.session["username"],
+    );
+    if (restReview) {
+      bookfound.reviews = restReview;
+      res.json({ success: "review deleted" });
+    } else {
+      return res.status(404).json({ error: "You dont have review in this book" });
+    }
+
+  } else {
+    return res.status(404).json({ error: "That book doesn't exist" });
+  }
 });
 
 module.exports.authenticated = regd_users;
